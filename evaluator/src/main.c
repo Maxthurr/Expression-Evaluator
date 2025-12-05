@@ -2,6 +2,7 @@
 
 #include <err.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +12,7 @@
 #include "lexer.h"
 #include "parser.h"
 
-static int evaluate(int rpn)
+static int evaluate(bool rpn)
 {
     char *expr = NULL;
     size_t l;
@@ -67,7 +68,7 @@ int main(int argc, char **argv)
     if (argc > 2)
         return 4;
 
-    int rpn = argc == 2;
+    bool rpn = argc == 2;
     if (rpn && strcmp("-rpn", argv[1]) != 0)
         return 4;
 

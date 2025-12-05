@@ -28,19 +28,19 @@ static int get_number(char **expr)
     return nb;
 }
 
-static bool add_to_queue(struct queue *queue, enum token_type type, int value,
-                         bool is_bin)
+static int add_to_queue(struct queue *queue, enum token_type type, int value,
+                        bool is_bin)
 {
     struct token *token = malloc(sizeof(struct token));
     if (!token)
-        return true;
+        return 1;
 
     token->type = type;
     token->value = value;
     token->is_bin = is_bin;
     queue_push(queue, token);
 
-    return false;
+    return 0;
 }
 
 static bool is_binary(char operator, struct token * previous)
@@ -80,20 +80,27 @@ enum token_type get_type(char c)
     }
 }
 
-static int read_and_add(struct queue *queue, char c, int rpn)
+static int read_and_add(struct queue *queue, char c, bool rpn)
 {
     enum token_type type = get_type(c);
     if (errno)
         return 1;
 
+    // RPN does not allow parentheses
+    if (rpn && (type == LEFT_P || type == RIGHT_P))
+    {
+        errno = 1;
+        return 1;
+    }
+
     if (type == RIGHT_P && queue->tail && queue->tail->token->type == LEFT_P)
         return 2;
 
     struct token *prev = queue->tail ? queue->tail->token : NULL;
-    return add_to_queue(queue, type, -1, rpn ? 1 : is_binary(c, prev));
+    return add_to_queue(queue, type, -1, rpn ? true : is_binary(c, prev));
 }
 
-struct queue *lexer(char *expr, int rpn)
+struct queue *lexer(char *expr, bool rpn)
 {
     if (!expr)
         return NULL;
