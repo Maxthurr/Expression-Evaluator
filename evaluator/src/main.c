@@ -11,19 +11,15 @@
 #include "lexer.h"
 #include "parser.h"
 
-int main(int argc, char **argv)
+static int evaluate(int rpn)
 {
-    if (argc > 2)
-        return 4;
-
-    int rpn = argc == 2;
-    if (rpn && strcmp("-rpn", argv[1]) != 0)
-        return 4;
-
     char *expr = NULL;
     size_t l;
     while (getline(&expr, &l, stdin) != EOF)
     {
+        if (*expr == '\n')
+            continue;
+
         struct queue *queue = lexer(expr, rpn);
 
         if (!queue)
@@ -32,17 +28,22 @@ int main(int argc, char **argv)
             return errno;
         }
 
+        if (!queue->size) // No expressions were given
+        {
+            queue_destroy(queue, 1);
+            continue;
+        }
+
         if (!rpn)
         {
             struct queue *tmp = parser(queue);
-            queue_destroy(queue, 0);
             if (!tmp)
             {
-                queue_destroy(tmp, 1);
                 free(expr);
                 return errno;
             }
 
+            queue_destroy(queue, 0);
             queue = tmp;
         }
 
@@ -59,5 +60,16 @@ int main(int argc, char **argv)
 
     free(expr);
     return 0;
-    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc > 2)
+        return 4;
+
+    int rpn = argc == 2;
+    if (rpn && strcmp("-rpn", argv[1]) != 0)
+        return 4;
+
+    return evaluate(rpn);
 }
