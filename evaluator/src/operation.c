@@ -29,7 +29,7 @@ int power(int a, int b)
     if (b == 0 || a == 1)
         return 1;
 
-    if (b == 1)
+    if (b == 1 || a == 0)
         return a;
 
     if (b % 2 == 0)
