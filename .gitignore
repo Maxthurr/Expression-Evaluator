@@ -1,6 +1,7 @@
 tags
 *.o
 testsuite
+eval
 *.h.gch
 *.gcda
 *.gcno
