@@ -1,6 +1,7 @@
 #include "lexer.h"
 
 #include <ctype.h>
+#include <err.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -84,17 +85,25 @@ static int read_and_add(struct queue *queue, char c, bool rpn)
 {
     enum token_type type = get_type(c);
     if (errno)
+    {
+        warnx("Unexpected token '%c' in expression", c);
         return 1;
+    }
 
     // RPN does not allow parentheses
     if (rpn && (type == LEFT_P || type == RIGHT_P))
     {
+        warnx("Parentheses are not allowed in RPN expressions");
         errno = 1;
         return 1;
     }
 
     if (type == RIGHT_P && queue->tail && queue->tail->token->type == LEFT_P)
+    {
+        warnx("Empty parentheses in expression");
+        errno = 2;
         return 2;
+    }
 
     struct token *prev = queue->tail ? queue->tail->token : NULL;
     return add_to_queue(queue, type, -1, rpn ? true : is_binary(c, prev));

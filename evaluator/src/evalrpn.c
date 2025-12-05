@@ -1,5 +1,6 @@
 #include "evalrpn.h"
 
+#include <err.h>
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -21,8 +22,6 @@ static struct stack *handle_unary(struct stack *stack, struct token *token,
     new_stack = stack_push(new_stack, operation[token->type](0, prev));
 
     return new_stack;
-
-    return stack;
 }
 
 static struct stack *handle_binary(struct stack *stack, struct token *token,
@@ -30,6 +29,7 @@ static struct stack *handle_binary(struct stack *stack, struct token *token,
 {
     if (!stack || !stack->next)
     {
+        warnx("Binary operator requires two operands");
         errno = 2;
         return NULL;
     }
@@ -37,9 +37,16 @@ static struct stack *handle_binary(struct stack *stack, struct token *token,
     int prev = stack_peek(stack);
     int prev2 = stack_peek(stack->next);
 
-    if ((token->type == POWER && prev < 0)
-        || ((token->type == DIV || token->type == MOD) && !prev))
+    if (token->type == POWER && prev < 0)
     {
+        warnx("Negative powers are not supported");
+        errno = 3;
+        return NULL;
+    }
+
+    if ((token->type == DIV || token->type == MOD) && !prev)
+    {
+        warnx("Division by zero");
         errno = 3;
         return NULL;
     }
@@ -101,6 +108,7 @@ int evalrpn(struct queue *queue)
     // More than one element in the stack or no stack at all
     if (!stack || stack->next)
     {
+        warnx("Invalid expression");
         cleanup(stack, operation, queue);
         errno = 2;
         return 0;

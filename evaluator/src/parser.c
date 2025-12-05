@@ -1,5 +1,6 @@
 #include "parser.h"
 
+#include <err.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -124,6 +125,7 @@ static struct token_stack *parse_queue(struct queue *tokens,
             struct token_stack *tmp = handle_right_par(output, operators);
             if (errno)
             {
+                warnx("Mismatched parentheses in expression");
                 free(token);
                 errno = 2;
                 return NULL;
