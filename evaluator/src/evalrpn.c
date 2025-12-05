@@ -17,6 +17,8 @@ static struct stack *handle_unary(struct stack *stack, struct token *token,
     if (!stack)
         return NULL;
 
+    // Get the top value and apply the unary operation
+    // then push the result back onto the stack
     int prev = stack_peek(stack);
     struct stack *new_stack = stack_pop(stack);
     new_stack = stack_push(new_stack, operation[token->type](0, prev));
@@ -51,6 +53,7 @@ static struct stack *handle_binary(struct stack *stack, struct token *token,
         return NULL;
     }
 
+    // Pop the two values and push the operation result back onto the stack
     struct stack *rest = stack_pop(stack);
     rest = stack_pop(rest);
     rest = stack_push(rest, operation[token->type](prev2, prev));

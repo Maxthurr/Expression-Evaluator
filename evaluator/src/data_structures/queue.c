@@ -25,6 +25,8 @@ void queue_push(struct queue *queue, struct token *token)
     l->token = token;
     l->next = NULL;
     queue->size++;
+
+    // Empty queue, put item at head
     if (!queue->head)
     {
         queue->head = l;
@@ -52,6 +54,7 @@ void queue_pop(struct queue *queue, int free_token)
 
     queue->size--;
 
+    // Queue is empty after pop, set head and tail to NULL
     if (queue->size == 0)
     {
         if (free_token)

@@ -49,6 +49,7 @@ static bool is_binary(char operator, struct token * previous)
     if (operator== '*' || operator== '/' || operator== '^')
         return true;
 
+    // If a + or a - has no left operand, it is unary
     if (!previous)
         return false;
 
@@ -98,6 +99,7 @@ static int read_and_add(struct queue *queue, char c, bool rpn)
         return 1;
     }
 
+    // Empty parentheses are not allowed
     if (type == RIGHT_P && queue->tail && queue->tail->token->type == LEFT_P)
     {
         warnx("Empty parentheses in expression");
@@ -128,12 +130,15 @@ struct queue *lexer(char *expr, bool rpn)
 
         if (isdigit(*expr))
         {
+            // Two numbers in a row is invalid in infix notation
             if (!rpn && queue->tail && queue->tail->token->type == INT)
             {
                 queue_destroy(queue, 1);
                 errno = 2;
                 return NULL;
             }
+
+            // Add the number token to the queue
             int nb = get_number(&expr);
             if (add_to_queue(queue, INT, nb, 0))
             {
@@ -144,6 +149,7 @@ struct queue *lexer(char *expr, bool rpn)
         }
         else
         {
+            // Add the operator token to the queue
             int e = read_and_add(queue, *expr, rpn);
             if (e)
             {

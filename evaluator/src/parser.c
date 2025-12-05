@@ -72,12 +72,14 @@ static struct token_stack *handle_right_par(struct queue *output,
         operators = token_stack_pop(operators);
     }
 
+    // Mismatched parentheses
     if (!operators)
     {
         errno = 2;
         return NULL;
     }
 
+    // Free the left parenthesis token
     if (operators->data->type == LEFT_P)
     {
         free(operators->data);
@@ -91,6 +93,9 @@ static struct token_stack *handle_operator(struct token_stack *operators,
                                            struct queue *output,
                                            struct token *token)
 {
+    // While there is an operator at the top of the operators stack with greater
+    // precedence or the operator at the top of the operators stack has equal
+    // precedence and is left associative push operators into the output queue
     while (operators && is_operator(operators->data)
            && operators->data->type != LEFT_P
            && operator_cmp(token, operators->data))
@@ -98,6 +103,9 @@ static struct token_stack *handle_operator(struct token_stack *operators,
         queue_push(output, operators->data);
         operators = token_stack_pop(operators);
     }
+
+    // All operators are in the output queue, push the current operator
+    // onto the operators stack
     operators = token_stack_push(operators, token);
 
     return operators;
@@ -114,12 +122,10 @@ static struct token_stack *parse_queue(struct queue *tokens,
 
         if (token->type == INT)
             queue_push(output, token);
-
         else if (is_operator(token))
             operators = handle_operator(operators, output, token);
         else if (token->type == LEFT_P)
             operators = token_stack_push(operators, token);
-
         else if (token->type == RIGHT_P)
         {
             struct token_stack *tmp = handle_right_par(output, operators);
@@ -146,11 +152,15 @@ struct queue *parser(struct queue *tokens)
     if (errno)
     {
         int olde = errno;
+
+        // Clear operators stack
         while (operators)
         {
             free(operators->data);
             operators = token_stack_pop(operators);
         }
+
+        // Clear tokens queue
         queue_destroy(output, 1);
         queue_destroy(tokens, 1);
 
@@ -161,6 +171,7 @@ struct queue *parser(struct queue *tokens)
     // Empty operators stack
     while (operators)
     {
+        // Mismatched parentheses
         if (operators->data->type == LEFT_P)
         {
             while (operators)
