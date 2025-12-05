@@ -18,9 +18,9 @@ test()
 {
     # Get evaluator output
     if [ "$RPN" -eq 1 ]; then
-        RESULT=$(echo "$2" | ./evalexpr "-rpn" 2>/dev/null || true)
+        RESULT=$(echo "$2" | ./eval "-rpn" 2>/dev/null || true)
     else
-        RESULT=$(echo "$2" | ./evalexpr 2>/dev/null || true)
+        RESULT=$(echo "$2" | ./eval 2>/dev/null || true)
     fi
 
     if [ "$3" != "$RESULT" ]; then
@@ -40,7 +40,7 @@ while read line; do
     EXPECTED=$(dc --expression="$EXPR p" 2> /dev/null)
     test "$TESTNB" "$EXPR" "$EXPECTED"
     TESTNB=$(($TESTNB + 1))
-done < tests/rpn.expr
+done < evaluator/tests/rpn.expr
 
 printf '%s%sRPN Tests%s: Passed: %s%d%s | Failed: %s%d%s | Total: %d\n\n' "$BOLD" "$BLUE" "$RESET" "$GREEN" "$PASSED" "$RESET" "$RED" "$(($TESTNB - $PASSED))" "$RESET" "$TESTNB"
 
@@ -55,7 +55,7 @@ while read line; do
     EXPECTED=$(echo "$EXPR" | bc)
     test "$TESTNB" "$EXPR" "$EXPECTED"
     TESTNB=$(($TESTNB + 1))
-done < tests/infix.expr
+done < evaluator/tests/infix.expr
 
 printf '%s%sInfix Tests%s: Passed: %s%d%s | Failed: %s%d%s | Total: %d\n\n' "$BOLD" "$BLUE" "$RESET" "$GREEN" "$PASSED" "$RESET" "$RED" "$(($TESTNB - $PASSED))" "$RESET" "$TESTNB"
 
@@ -72,7 +72,7 @@ testerror()
     fi
 
     # Run evaluator with the expression on stdin; suppress stdout/stderr
-    echo "$2" | ./evalexpr >/dev/null 2>/dev/null
+    echo "$2" | ./eval >/dev/null 2>/dev/null
     CODE=$?
 
     if [ "$CODE" -ne "$EXPECTED_CODE" ]; then
@@ -92,7 +92,7 @@ while read line; do
     EXPECTED=$(echo "$line" | cut -d '|' -f 2)
     testerror "$TESTNB" "$EXPR" "$EXPECTED"
     TESTNB=$(($TESTNB + 1))
-done < tests/errors.expr
+done < evaluator/tests/errors.expr
 
 printf '%s%sErrors Tests%s: Passed: %s%d%s | Failed: %s%d%s | Total: %d\n' "$BOLD" "$BLUE" "$RESET" "$GREEN" "$PASSED" "$RESET" "$RED" "$(($TESTNB - $PASSED))" "$RESET" "$TESTNB"
 
