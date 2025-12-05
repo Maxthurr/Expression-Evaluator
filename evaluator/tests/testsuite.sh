@@ -1,5 +1,8 @@
 #!/bin/sh
 
+### Configuration
+BINARY="./eval"
+
 ### Pretty printing variables
 
 RED="$(printf '\033[31m')"     # Red text
@@ -18,9 +21,9 @@ test()
 {
     # Get evaluator output
     if [ "$RPN" -eq 1 ]; then
-        RESULT=$(echo "$2" | ./eval "-rpn" 2>/dev/null || true)
+        RESULT=$(echo "$2" | $BINARY "-rpn" 2>/dev/null || true)
     else
-        RESULT=$(echo "$2" | ./eval 2>/dev/null || true)
+        RESULT=$(echo "$2" | $BINARY 2>/dev/null || true)
     fi
 
     if [ "$3" != "$RESULT" ]; then
@@ -72,7 +75,7 @@ testerror()
     fi
 
     # Run evaluator with the expression on stdin; suppress stdout/stderr
-    echo "$2" | ./eval >/dev/null 2>/dev/null
+    echo "$2" | $BINARY >/dev/null 2>/dev/null
     CODE=$?
 
     if [ "$CODE" -ne "$EXPECTED_CODE" ]; then
