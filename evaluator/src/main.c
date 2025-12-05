@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "data_structures/queue.h"
 #include "evalrpn.h"
@@ -51,8 +53,8 @@ static int evaluate(bool rpn)
         int result = evalrpn(queue);
         if (errno)
         {
-            free(expr);
             int olde = errno;
+            free(expr);
             return olde;
         }
 
@@ -66,11 +68,17 @@ static int evaluate(bool rpn)
 int main(int argc, char **argv)
 {
     if (argc > 2)
-        return 4;
+        errx(4, "Usage: %s [-rpn | -h]", argv[0]);
 
     bool rpn = argc == 2;
     if (rpn && strcmp("-rpn", argv[1]) != 0)
-        return 4;
+        errx(4, "Usage: %s [-rpn | -h]", argv[0]);
+
+    // If input is from terminal, print prompt
+    struct stat st;
+    fstat(STDIN_FILENO, &st);
+    if (S_ISCHR(st.st_mode))
+        puts("Enter expression(s) to evaluate (Ctrl+D to end):");
 
     return evaluate(rpn);
 }
