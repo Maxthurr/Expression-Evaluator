@@ -70,6 +70,16 @@ int main(int argc, char **argv)
     if (argc > 2)
         errx(4, "Usage: %s [-rpn | -h]", argv[0]);
 
+    if (strcmp("-h", argv[1]) == 0)
+    {
+        printf("Usage: %s [-rpn | -h]\n", argv[0]);
+        puts("Evaluate mathematical expressions from standard input.");
+        puts("\t-rpn\tInterpret input expressions as Reverse Polish Notation "
+             "(RPN).");
+        puts("\t-h\tDisplay this help message and exit.");
+        return 0;
+    }
+
     bool rpn = argc == 2;
     if (rpn && strcmp("-rpn", argv[1]) != 0)
         errx(4, "Usage: %s [-rpn | -h]", argv[0]);
