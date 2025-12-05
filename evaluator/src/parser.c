@@ -1,34 +1,35 @@
 #include "parser.h"
 
 #include <errno.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "data_structures/queue.h"
 #include "data_structures/token.h"
 #include "data_structures/token_stack.h"
 
-static int is_operator(struct token *token)
+static bool is_operator(struct token *token)
 {
     switch (token->type)
     {
     case INT:
-        return 0;
+        return false;
     case LEFT_P:
-        return 0;
+        return false;
     case RIGHT_P:
-        return 0;
+        return false;
     default:
-        return 1;
+        return true;
     }
 }
 
-static int is_left_associative(struct token *token)
+static bool is_left_associative(struct token *token)
 {
     return token->type == MULT || token->type == DIV || token->type == MOD
         || token->is_bin;
 }
 
-static int operator_cmp(struct token *t1, struct token *t2)
+static bool operator_cmp(struct token *t1, struct token *t2)
 {
     int p1 = 0;
     int p2 = 0;

@@ -38,7 +38,7 @@ int power(int a, int b)
     return a * power(a * a, (b - 1) / 2);
 }
 
-operation *build_operation()
+operation *build_operation(void)
 {
     operation *arr = malloc(8 * sizeof(operation *));
     if (!arr)

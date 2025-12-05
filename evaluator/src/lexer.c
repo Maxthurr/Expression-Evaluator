@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,28 +28,28 @@ static int get_number(char **expr)
     return nb;
 }
 
-static int add_to_queue(struct queue *queue, enum token_type type, int value,
-                        int is_bin)
+static bool add_to_queue(struct queue *queue, enum token_type type, int value,
+                         bool is_bin)
 {
     struct token *token = malloc(sizeof(struct token));
     if (!token)
-        return 1;
+        return true;
 
     token->type = type;
     token->value = value;
     token->is_bin = is_bin;
     queue_push(queue, token);
 
-    return 0;
+    return false;
 }
 
-static int is_binary(char operator, struct token * previous)
+static bool is_binary(char operator, struct token * previous)
 {
     if (operator== '*' || operator== '/' || operator== '^')
-        return 1;
+        return true;
 
     if (!previous)
-        return 0;
+        return false;
 
     return previous->type == INT || previous->type == RIGHT_P;
 }
