@@ -98,8 +98,8 @@ int evalrpn(struct queue *queue)
         queue_pop(queue, 1);
     }
 
-    // More than one element in the stack
-    if (stack->next)
+    // More than one element in the stack or no stack at all
+    if (!stack || stack->next)
     {
         cleanup(stack, operation, queue);
         errno = 2;
