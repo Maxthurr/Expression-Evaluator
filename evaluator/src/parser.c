@@ -125,14 +125,8 @@ static struct token_stack *parse_queue(struct queue *tokens,
             if (errno)
             {
                 free(token);
-                while (tmp)
-                {
-                    free(tmp->data);
-                    tmp = token_stack_pop(tmp);
-                }
-
                 errno = 2;
-                return operators;
+                return NULL;
             }
             operators = tmp;
 
