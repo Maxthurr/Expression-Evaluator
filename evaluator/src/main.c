@@ -93,7 +93,8 @@ int main(int argc, char **argv)
     struct stat st;
     fstat(STDIN_FILENO, &st);
     if (S_ISCHR(st.st_mode))
-        puts("Enter expression(s) to evaluate (Ctrl+D to end):");
+        puts(rpn ? "Enter RPN expression(s) to evaluate (Ctrl+D to end):"
+                 : "Enter expression(s) to evaluate (Ctrl+D to end):");
 
     return evaluate(rpn);
 }
