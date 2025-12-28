@@ -14,6 +14,15 @@
 #include "lexer.h"
 #include "parser.h"
 
+static void help(char *program_name)
+{
+    printf("Usage: %s [-rpn | -h]\n", program_name);
+    puts("Evaluate mathematical expressions from standard input.");
+    puts("\t-rpn\tInterpret input expressions as Reverse Polish Notation "
+         "(RPN).");
+    puts("\t-h\tDisplay this help message and exit.");
+}
+
 static int evaluate(bool rpn)
 {
     char *expr = NULL;
@@ -70,13 +79,9 @@ int main(int argc, char **argv)
     if (argc > 2)
         errx(4, "Usage: %s [-rpn | -h]", argv[0]);
 
-    if (strcmp("-h", argv[1]) == 0)
+    if (argc > 1 && strcmp("-h", argv[1]) == 0)
     {
-        printf("Usage: %s [-rpn | -h]\n", argv[0]);
-        puts("Evaluate mathematical expressions from standard input.");
-        puts("\t-rpn\tInterpret input expressions as Reverse Polish Notation "
-             "(RPN).");
-        puts("\t-h\tDisplay this help message and exit.");
+        help(argv[0]);
         return 0;
     }
 
